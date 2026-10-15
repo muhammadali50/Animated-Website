@@ -1,11 +1,7 @@
-import Image from "next/image";
+import { ExteriorStory } from "@/components/exterior-story";
 import { MediaPreview } from "@/components/media-preview";
-import { media } from "@/lib/media";
 
 export function ExteriorSection() {
-  const frontAngle = media["front-angle"][0];
-  const rearAngle = media.rear[0];
-
   return (
     <section className="section exterior-section" id="exterior" aria-labelledby="exterior-title">
       <div className="section-heading exterior-heading">
@@ -16,17 +12,7 @@ export function ExteriorSection() {
         </div>
       </div>
 
-      <div className="exterior-gallery">
-        <figure className="editorial-image exterior-front-angle">
-          <Image src={frontAngle.src} alt={frontAngle.alt} fill sizes="(max-width: 760px) 100vw, 62vw" />
-          <figcaption><span>01</span> FRONT THREE-QUARTER</figcaption>
-        </figure>
-        <figure className="editorial-image exterior-rear-angle">
-          <Image src={rearAngle.src} alt={rearAngle.alt} fill sizes="(max-width: 760px) 100vw, 42vw" />
-          <figcaption><span>02</span> REAR THREE-QUARTER</figcaption>
-        </figure>
-      </div>
-
+      <ExteriorStory />
       <MediaPreview />
     </section>
   );

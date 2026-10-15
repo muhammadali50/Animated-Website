@@ -1,11 +1,18 @@
+"use client";
+
 import Image from "next/image";
+import { useRef } from "react";
 import { media } from "@/lib/media";
+import { useHeroAnimation } from "@/hooks/use-hero-animation";
 
 export function HeroSection() {
   const heroImage = media["exterior-front"][0];
+  const heroRef = useRef<HTMLElement>(null);
+
+  useHeroAnimation(heroRef);
 
   return (
-    <section className="hero" id="top" aria-labelledby="hero-title">
+    <section ref={heroRef} className="hero" id="top" aria-labelledby="hero-title">
       <div className="hero-media">
         <Image
           className="hero-image"
