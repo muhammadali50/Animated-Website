@@ -12,6 +12,9 @@ export function useExteriorStoryAnimation(storyRef: ExteriorStoryAnimationOption
 
     const stage = story.querySelector<HTMLElement>(".exterior-stage");
     const scenes = Array.from(story.querySelectorAll<HTMLElement>(".exterior-scene"));
+    const sceneIndexes = scenes
+      .map((scene) => scene.querySelector<HTMLElement>(".exterior-scene-index"))
+      .filter((index): index is HTMLElement => index !== null);
     if (!stage || scenes.length !== 3) return;
 
     const mediaQuery = gsap.matchMedia();
@@ -25,15 +28,26 @@ export function useExteriorStoryAnimation(storyRef: ExteriorStoryAnimationOption
 
           const images = scenes.map((scene) => scene.querySelector<HTMLElement>(".exterior-scene-image"));
           const copy = scenes.map((scene) => scene.querySelector<HTMLElement>(".exterior-scene-copy"));
-          if (images.some((image) => !image) || copy.some((content) => !content)) {
+          if (
+            images.some((image) => !image) ||
+            copy.some((content) => !content) ||
+            sceneIndexes.length !== 3
+          ) {
             story.classList.remove("is-cinematic");
             return;
           }
 
           gsap.set(scenes, { autoAlpha: 0 });
           gsap.set(scenes[0], { autoAlpha: 1 });
-          gsap.set(images, { scale: 1.035, transformOrigin: "center center" });
+          gsap.set(images, {
+            scale: 1.035,
+            clipPath: "inset(0 100% 0 0)",
+            transformOrigin: "center center",
+          });
+          gsap.set(images[0], { clipPath: "inset(0 0% 0 0)" });
           gsap.set(copy, { autoAlpha: 0, y: 12 });
+          gsap.set(sceneIndexes, { autoAlpha: 0 });
+          gsap.set(sceneIndexes[0], { autoAlpha: 1 });
 
           gsap
             .timeline({
@@ -52,15 +66,21 @@ export function useExteriorStoryAnimation(storyRef: ExteriorStoryAnimationOption
             .to(images[0], { scale: 1, duration: 0.3, ease: "none" }, 0)
             .to(copy[0], { autoAlpha: 1, y: 0, duration: 0.12, ease: "power2.out" }, 0.02)
             .to(copy[0], { autoAlpha: 0, y: -9, duration: 0.07, ease: "none" }, 0.25)
-            .to(scenes[0], { autoAlpha: 0, duration: 0.1, ease: "none" }, 0.3)
-            .to(scenes[1], { autoAlpha: 1, duration: 0.1, ease: "none" }, 0.3)
+            .set(scenes[1], { autoAlpha: 1 }, 0.3)
+            .to(images[1], { clipPath: "inset(0 0% 0 0)", duration: 0.12, ease: "none" }, 0.3)
+            .to(sceneIndexes[0], { autoAlpha: 0, duration: 0.06, ease: "none" }, 0.29)
+            .to(sceneIndexes[1], { autoAlpha: 1, duration: 0.06, ease: "none" }, 0.34)
+            .to(scenes[0], { autoAlpha: 0, duration: 0.01, ease: "none" }, 0.43)
             .to(images[1], { scale: 1, duration: 0.37, ease: "none" }, 0.3)
-            .to(copy[1], { autoAlpha: 1, y: 0, duration: 0.12, ease: "power2.out" }, 0.33)
+            .to(copy[1], { autoAlpha: 1, y: 0, duration: 0.12, ease: "power2.out" }, 0.31)
             .to(copy[1], { autoAlpha: 0, y: -9, duration: 0.07, ease: "none" }, 0.59)
-            .to(scenes[1], { autoAlpha: 0, duration: 0.1, ease: "none" }, 0.63)
-            .to(scenes[2], { autoAlpha: 1, duration: 0.1, ease: "none" }, 0.63)
+            .set(scenes[2], { autoAlpha: 1 }, 0.63)
+            .to(images[2], { clipPath: "inset(0 0% 0 0)", duration: 0.12, ease: "none" }, 0.63)
+            .to(sceneIndexes[1], { autoAlpha: 0, duration: 0.06, ease: "none" }, 0.62)
+            .to(sceneIndexes[2], { autoAlpha: 1, duration: 0.06, ease: "none" }, 0.67)
+            .to(scenes[1], { autoAlpha: 0, duration: 0.01, ease: "none" }, 0.76)
             .to(images[2], { scale: 1, duration: 0.34, ease: "none" }, 0.63)
-            .to(copy[2], { autoAlpha: 1, y: 0, duration: 0.12, ease: "power2.out" }, 0.66);
+            .to(copy[2], { autoAlpha: 1, y: 0, duration: 0.12, ease: "power2.out" }, 0.65);
 
           return () => story.classList.remove("is-cinematic");
         },

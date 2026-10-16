@@ -13,7 +13,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000). Use `npm run lint`, `npm run build`, and `npm audit` for local checks.
 
-GSAP and ScrollTrigger are registered in `src/animations/gsap.ts` for future client-side animations. The current sections are static and stable before animation work begins. No 3D dependency is included.
+GSAP and ScrollTrigger are registered once in `src/animations/gsap.ts`. The hero, exterior story and interior story use desktop pinned, scrubbed timelines; tablet and mobile use lighter or static layouts, and reduced-motion mode disables the timelines. The performance reveal is unpinned and responsive. Each animation hook scopes its selectors and cleans up its timelines and triggers when the component unmounts or its media query changes. No 3D dependency is included.
 
 ## Structure
 
@@ -22,13 +22,13 @@ src/
   animations/  Shared GSAP and ScrollTrigger registration
   app/         App Router layout, homepage and global styles
   components/  Header, editorial sections, media preview and footer
-  hooks/       Reserved for shared React hooks
+  hooks/       Section-owned GSAP animation hooks
   lib/         Centralized media manifest
   styles/      Reserved for additional style sheets
 public/media/  Original exterior, engine and interior images
 ```
 
-The homepage remains a Server Component. Only `MediaPreview` is client-rendered because its view selector and missing-image fallback need local state.
+The route, layout, header, footer and static section wrappers remain Server Components. Client components are limited to sections that own animation hooks and the interactive `MediaPreview` selector.
 
 ## Page sections
 
@@ -37,6 +37,8 @@ The homepage remains a Server Component. Only `MediaPreview` is client-rendered 
 - Engineering: engine image and non-speculative detail copy.
 - Interior: the two real cockpit images.
 - Closing: open-door image, anchor CTA and site footer.
+
+On desktop, the hero, exterior story and interior story pin in sequence; the performance section animates without pinning. Responsive media queries remove pinning at tablet and mobile widths, and reduced-motion mode leaves all scene content visible in its static layout. Section navigation uses document landmarks so return-to-top links do not target a hero while it is inside its pinned timeline.
 
 ## Media inventory
 
@@ -52,6 +54,8 @@ The homepage remains a Server Component. Only `MediaPreview` is client-rendered 
 All seven original PNGs are referenced in `src/lib/media.ts`. There are no missing media categories. The interactive preview falls back gracefully if an image request fails.
 
 ## Dependency audit
+
+The latest audit attempt on 2026-10-15 could not retrieve current advisory data: both `npm audit` and `npm audit --omit=dev` failed while requesting npm's bulk advisory endpoint. The results below are the last successfully recorded audit and have not been live-verified in this run.
 
 `npm audit` on the checked-in lockfile reports five high-severity package records from one underlying advisory: [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm), affecting `braces@3.0.3` through this development-only chain:
 
